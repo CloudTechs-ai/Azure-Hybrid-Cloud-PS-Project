@@ -1,0 +1,155 @@
+name: Terraform Drift Detection
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to check (leave default to check all)
+        required: false
+        type: choice
+        options: [all, dev, test, prod]
+        default: all
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+jobs:
+  drift:
+    name: Drift check ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: ${{ matrix.environment }}
+    concurrency:
+      group: terraform-state-${{ matrix.environment }}
+      cancel-in-progress: false
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, test, prod]
+    env:
+      ARM_USE_OIDC: true
+      ARM_USE_AZUREAD: true
+      ARM_USE_CLI: false
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    defaults:
+      run:
+        working-directory: environments/${{ matrix.environment }}
+
+    steps:
+      - name: Skip environments not selected
+        if: ${{ github.event.inputs.environment != '' && github.event.inputs.environment != 'all' && github.event.inputs.environment != matrix.environment }}
+        run: echo "Skipping ${{ matrix.environment }}" && exit 0
+
+      - name: Check out main
+        if: ${{ github.event.inputs.environment == '' || github.event.inputs.environment == 'all' || github.event.inputs.environment == matrix.environment }}
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Log in to Azure with OIDC
+        if: ${{ github.event.inputs.environment == '' || github.event.inputs.environment == 'all' || github.event.inputs.environment == matrix.environment }}
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        if: ${{ github.event.inputs.environment == '' || github.event.inputs.environment == 'all' || github.event.inputs.environment == matrix.environment }}
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      - name: Initialize Terraform
+        if: ${{ github.event.inputs.environment == '' || github.event.inputs.environment == 'all' || github.event.inputs.environment == matrix.environment }}
+        run: terraform init -input=false -reconfigure
+
+      - name: Detect drift
+        if: ${{ github.event.inputs.environment == '' || github.event.inputs.environment == 'all' || github.event.inputs.environment == matrix.environment }}
+        id: drift
+        run: |
+          set +e
+          terraform plan -input=false -lock-timeout=5m -no-color -detailed-exitcode -out=drift.tfplan > drift.log 2>&1
+          echo "exitcode=$?" >> "$GITHUB_OUTPUT"
+          cat drift.log
+
+      - name: Render drift summary
+        if: ${{ steps.drift.outputs.exitcode == '2' }}
+        run: terraform show -no-color drift.tfplan > drift-summary.txt
+
+      - name: Open or update drift issue
+        if: ${{ steps.drift.outputs.exitcode == '2' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const environment = '${{ matrix.environment }}';
+            const summary = fs.readFileSync('environments/' + environment + '/drift-summary.txt', 'utf8').slice(0, 60000);
+            const title = `Terraform drift detected: ${environment}`;
+            const body = `Scheduled drift detection found differences between Terraform configuration and the live \`${environment}\` environment.\n\nReview and reconcile with a reviewed plan and apply, or update the configuration to match reality.\n\n\`\`\`\n${summary}\n\`\`\``;
+            for (const name of ['terraform-drift', environment]) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              } catch {
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: 'd73a4a' });
+              }
+            }
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: `terraform-drift,${environment}`,
+            });
+            if (existing.data.length > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: `terraform-drift,${environment}`,
+              });
+            }
+
+      - name: Close drift issue if reconciled
+        if: ${{ steps.drift.outputs.exitcode == '0' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const environment = '${{ matrix.environment }}';
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: `terraform-drift,${environment}`,
+            });
+            for (const issue of existing.data) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: 'No drift detected on the latest scheduled check. Closing.',
+              });
+            }
+
+      - name: Fail job on plan error
+        if: ${{ steps.drift.outputs.exitcode == '1' }}
+        run: exit 1

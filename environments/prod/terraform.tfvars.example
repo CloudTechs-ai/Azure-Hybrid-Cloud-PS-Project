@@ -1,13 +1,12 @@
 # Copy this file to terraform.tfvars and adjust as needed.
-# terraform.tfvars is gitignored, so real values never get committed.
 
 project     = "hybridcloud"
-environment = "dev"
+environment = "prod"
 location    = "eastus"
 
 tags = {
   project     = "azure-hybrid-cloud"
-  environment = "dev"
+  environment = "prod"
   managed_by  = "terraform"
-  owner       = "Ryan" # change to your name
+  owner       = "christopher"
 }

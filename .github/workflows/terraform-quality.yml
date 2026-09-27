@@ -1,0 +1,136 @@
+name: Terraform Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: terraform-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform-quality:
+    name: Terraform quality checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize demo without a backend
+        working-directory: demo
+        run: terraform init -backend=false -input=false
+
+      - name: Validate demo configuration
+        working-directory: demo
+        run: terraform validate
+
+      - name: Run TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.53.0
+
+      - name: Initialize TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --recursive --format compact
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          quiet: true
+          soft_fail: true
+
+      - name: Run Trivy filesystem and IaC scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,misconfig,secret
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Write workflow summary
+        run: |
+          {
+            echo "## Terraform quality"
+            echo ""
+            echo "- Formatting: passed"
+            echo "- Demo initialization and validation: passed"
+            echo "- TFLint: passed"
+            echo "- Checkov: completed in advisory mode"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  terraform-validate-environments:
+    name: Validate ${{ matrix.environment }} configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, test, prod]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      - name: Initialize without a backend
+        working-directory: environments/${{ matrix.environment }}
+        run: terraform init -backend=false -input=false
+
+      - name: Validate Terraform configuration
+        working-directory: environments/${{ matrix.environment }}
+        run: terraform validate
+
+  sonarcloud:
+    name: SonarCloud analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: ${{ vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run SonarCloud analysis
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >-
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=.
+            -Dsonar.scm.provider=git
+
+      - name: Write SonarCloud summary
+        run: echo "SonarCloud analysis completed for ${{ vars.SONAR_PROJECT_KEY }}" >> "$GITHUB_STEP_SUMMARY"

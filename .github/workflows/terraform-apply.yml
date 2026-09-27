@@ -1,0 +1,177 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to apply
+        required: true
+        type: choice
+        options: [dev, test, prod]
+      plan_run_id:
+        description: GitHub Actions run ID that produced the reviewed plan
+        required: true
+        type: string
+      source_commit:
+        description: Exact commit SHA recorded by the plan workflow
+        required: true
+        type: string
+      confirmation:
+        description: Type APPLY to authorize applying the exact reviewed plan
+        required: true
+        type: choice
+        options: [CANCEL, APPLY]
+
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+  issues: write
+
+concurrency:
+  group: terraform-state-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Apply ${{ inputs.environment }}
+    if: ${{ inputs.confirmation == 'APPLY' && (inputs.environment != 'prod' || github.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: ${{ inputs.environment }}
+    env:
+      ARM_USE_OIDC: true
+      ARM_USE_AZUREAD: true
+      ARM_USE_CLI: false
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    defaults:
+      run:
+        working-directory: environments/${{ inputs.environment }}
+
+    steps:
+      - name: Verify plan workflow run and artifact
+        uses: actions/github-script@v7
+        env:
+          PLAN_RUN_ID: ${{ inputs.plan_run_id }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+        with:
+          script: |
+            const runId = Number(process.env.PLAN_RUN_ID);
+            if (!Number.isSafeInteger(runId)) throw new Error('Plan run ID must be numeric.');
+            if (!/^[0-9a-f]{40}$/i.test(process.env.SOURCE_COMMIT)) throw new Error('Source commit must be a full 40-character SHA.');
+            const { data: run } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+            });
+            const { data: workflow } = await github.rest.actions.getWorkflow({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: run.workflow_id,
+            });
+            if (workflow.path !== '.github/workflows/terraform-plan.yml' || run.conclusion !== 'success' || run.event !== 'workflow_dispatch' || run.head_branch !== 'main') {
+              throw new Error('The supplied run is not a successful Terraform Plan dispatch from main.');
+            }
+            if (run.head_repository?.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              throw new Error('The plan run did not originate in this repository.');
+            }
+            const artifactName = `terraform-plan-${process.env.TARGET_ENVIRONMENT}-${runId}`;
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+            });
+            if (!artifacts.artifacts.some(a => a.name === artifactName && !a.expired)) {
+              throw new Error(`Expected plan artifact ${artifactName} is missing or expired.`);
+            }
+
+      - name: Check out exact plan source commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_commit }}
+
+      - name: Verify checked-out commit
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          actual_commit="$(git rev-parse HEAD)"
+          test "$actual_commit" = "$SOURCE_COMMIT"
+
+      - name: Download exact reviewed plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan-${{ inputs.environment }}-${{ inputs.plan_run_id }}
+          path: environments/${{ inputs.environment }}
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.plan_run_id }}
+
+      - name: Verify plan metadata
+        shell: bash
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          test "$(grep '^environment=' plan-metadata.txt | cut -d= -f2)" = "$TARGET_ENVIRONMENT"
+          test "$(grep '^source_commit=' plan-metadata.txt | cut -d= -f2)" = "$SOURCE_COMMIT"
+
+      - name: Require successful quality run for production commit
+        if: ${{ inputs.environment == 'prod' }}
+        uses: actions/github-script@v7
+        env:
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        with:
+          script: |
+            const { data } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'terraform-quality.yml',
+              head_sha: process.env.SOURCE_COMMIT,
+              status: 'completed',
+              per_page: 100,
+            });
+            const passed = data.workflow_runs.some(run => run.event === 'push' && run.head_branch === 'main' && run.conclusion === 'success');
+            if (!passed) throw new Error('Production requires a successful Terraform Quality push run for this exact commit.');
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.5"
+
+      - name: Initialize Terraform
+        run: terraform init -input=false -reconfigure
+
+      - name: Apply exact reviewed plan
+        run: terraform apply -input=false tfplan
+
+      - name: Open failure notification issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const environment = '${{ inputs.environment }}';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            for (const name of ['terraform-failure', environment]) {
+              try {
+                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name });
+              } catch {
+                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color: 'd73a4a' });
+              }
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Terraform apply failed: ${environment}`,
+              body: `The Terraform Apply workflow failed for \`${environment}\` at commit \`${{ inputs.source_commit }}\`.\n\nRun: ${runUrl}\n\nInvestigate before retrying. Do not re-run apply blindly; review state and plan output first.`,
+              labels: ['terraform-failure', environment],
+            });

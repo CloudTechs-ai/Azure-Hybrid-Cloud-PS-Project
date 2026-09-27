@@ -1,0 +1,12 @@
+# Optional: copy to terraform.tfvars and adjust for your own Azure sandbox.
+# Never commit terraform.tfvars or credentials.
+
+project     = "hybridclouddemo"
+environment = "demo"
+location    = "eastus"
+
+tags = {
+  project     = "azure-hybrid-cloud"
+  environment = "demo"
+  managed_by  = "terraform"
+}

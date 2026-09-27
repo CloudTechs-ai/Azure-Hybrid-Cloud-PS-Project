@@ -12,8 +12,14 @@
     account name globally unique. Storage account names must be lowercase,
     3-24 characters, letters and numbers only.
 
+.PARAMETER Environment
+    Environment whose Terraform state key will use this backend.
+
 .EXAMPLE
-    ./Bootstrap-Backend.ps1 -Suffix cjt01
+    .\Bootstrap-Backend.ps1 -Suffix dev01ahcps -Environment dev
+
+.EXAMPLE
+    .\Bootstrap-Backend.ps1 -Suffix test01ahcps -Environment test
 #>
 
 [CmdletBinding()]
@@ -21,6 +27,9 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^[a-z0-9]+$')]
     [string]$Suffix,
+
+    [ValidateSet('dev', 'test', 'prod')]
+    [string]$Environment = 'dev',
 
     [string]$Location = "eastus"
 )
@@ -40,6 +49,7 @@ else {
 $rgName = "rg-tfstate-$Suffix"
 $saName = "sttfstate$Suffix"
 $containerName = "tfstate"
+$stateKey = "$Environment.terraform.tfstate"
 
 Write-Host "Creating resource group: $rgName" -ForegroundColor Cyan
 $resourceGroup = Get-AzResourceGroup -Name $rgName -ErrorAction SilentlyContinue
@@ -77,10 +87,10 @@ else {
 }
 
 Write-Host ""
-Write-Host "Backend storage account ready. Put these values into environments/dev/backend.tf:" -ForegroundColor Green
+Write-Host "Backend storage account ready. Put these values into environments/$Environment/backend.tf:" -ForegroundColor Green
 Write-Host ""
 Write-Host "  resource_group_name  = `"$rgName`""
 Write-Host "  storage_account_name = `"$saName`""
 Write-Host "  container_name       = `"$containerName`""
-Write-Host "  key                  = `"dev.terraform.tfstate`""
+Write-Host "  key                  = `"$stateKey`""
 Write-Host ""

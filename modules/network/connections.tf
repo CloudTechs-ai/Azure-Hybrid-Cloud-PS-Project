@@ -1,17 +1,15 @@
-# -----------------------------------------------------------------------------
-# connections.tf
-# Attaches each spoke VNet to the Virtual Hub so traffic routes through the
-# hub (and, from there, out over the point-to-site VPN to your laptop).
-# -----------------------------------------------------------------------------
+# Connects each spoke VNet to the Virtual WAN hub. This is what makes the
+# hub the routing point between spokes, rather than peering spokes directly
+# to each other.
 
-resource "azurerm_virtual_hub_connection" "app" {
-  name                      = "hubconn-app-${var.suffix}"
-  virtual_hub_id            = azurerm_virtual_hub.this.id
-  remote_virtual_network_id = azurerm_virtual_network.app.id
+resource "azurerm_virtual_hub_connection" "app_spoke" {
+  name                      = "conn-app-spoke"
+  virtual_hub_id            = azurerm_virtual_hub.main.id
+  remote_virtual_network_id = azurerm_virtual_network.app_spoke.id
 }
 
-resource "azurerm_virtual_hub_connection" "data" {
-  name                      = "hubconn-data-${var.suffix}"
-  virtual_hub_id            = azurerm_virtual_hub.this.id
-  remote_virtual_network_id = azurerm_virtual_network.data.id
+resource "azurerm_virtual_hub_connection" "data_spoke" {
+  name                      = "conn-data-spoke"
+  virtual_hub_id            = azurerm_virtual_hub.main.id
+  remote_virtual_network_id = azurerm_virtual_network.data_spoke.id
 }

@@ -1,27 +1,27 @@
 variable "project" {
-  description = "Short project name used as a prefix in resource names"
+  description = "Short project name used as a naming prefix"
   type        = string
-  default     = "hybridcloud"
+  default     = "hybridclouddemo"
 }
 
 variable "environment" {
-  description = "Environment name (dev, test, prod)"
+  description = "Demo environment name"
   type        = string
-  default     = "dev"
+  default     = "demo"
 }
 
 variable "location" {
-  description = "Azure region for all resources"
+  description = "Azure region for the demo plan"
   type        = string
   default     = "eastus"
 }
 
 variable "tags" {
-  description = "Common tags applied to all resources"
+  description = "Common tags applied to demo resources"
   type        = map(string)
   default = {
     project     = "azure-hybrid-cloud"
-    environment = "dev"
+    environment = "demo"
     managed_by  = "terraform"
   }
 }
