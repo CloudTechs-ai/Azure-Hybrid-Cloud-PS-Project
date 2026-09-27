@@ -1,0 +1,14 @@
+# Copy this to terraform.tfvars and fill in your own values:
+#   cp terraform.tfvars.example terraform.tfvars
+
+suffix   = "cjt01"       # match the -Suffix you used with bootstrap-backend.ps1
+location = "eastus"
+
+# Find your tenant ID with: az account show --query tenantId -o tsv
+aad_tenant_id = "7bd64a14-1bd8-43ef-b111-c2aa801bd4ed"
+
+tags = {
+  project = "azure-hybrid-cloud"
+  env     = "dev"
+  owner   = "Ryan"
+}
