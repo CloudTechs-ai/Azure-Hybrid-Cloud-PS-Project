@@ -2,8 +2,21 @@
 
 ### Production-Style Azure Networking & Infrastructure Automation with Terraform
 
-**Azure · Terraform · Virtual WAN · Virtual Hub · Entra ID · P2S VPN · NSGs · Private Endpoints · Azure Blob Storage · RBAC · GitHub Actions · OIDC · TFLint · Checkov · Trivy**
-
+[![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?logo=microsoftazure)](#)
+[![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform)](#)
+[![Virtual WAN](https://img.shields.io/badge/Virtual%20WAN-Networking-0078D4?logo=microsoftazure)](#)
+[![Entra ID](https://img.shields.io/badge/Entra%20ID-Identity-0078D4?logo=microsoftazure)](#)
+[![P2S VPN](https://img.shields.io/badge/P2S%20VPN-Secure%20Access-0078D4?logo=microsoftazure)](#)
+[![NSGs](https://img.shields.io/badge/NSGs-Network%20Security-0078D4?logo=microsoftazure)](#)
+[![Private Endpoints](https://img.shields.io/badge/Private%20Endpoints-Private%20Networking-0078D4?logo=microsoftazure)](#)
+[![Azure Blob Storage](https://img.shields.io/badge/Azure%20Blob%20Storage-Remote%20State-0078D4?logo=microsoftazure)](#)
+[![RBAC](https://img.shields.io/badge/Azure%20RBAC-Access%20Control-0078D4?logo=microsoftazure)](#)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=github)](#)
+[![OIDC](https://img.shields.io/badge/OIDC-Keyless%20Auth-2088FF?logo=openid)](#)
+[![TFLint](https://img.shields.io/badge/TFLint-Validation-844FBA?logo=terraform)](#)
+[![Checkov](https://img.shields.io/badge/Checkov-IaC%20Security-7B42BC)](#)
+[![Trivy](https://img.shields.io/badge/Trivy-Security%20Scanning-1904DA?logo=aqua)](#)
+[![PowerShell](https://img.shields.io/badge/PowerShell-Automation-5391FE?logo=powershell)](#)
 > An enterprise-style Azure hybrid cloud platform demonstrating secure networking, infrastructure-as-code, identity-driven access, environment isolation, remote state management, CI/CD automation, security scanning, and operational troubleshooting.
 
 ---
