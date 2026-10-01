@@ -122,7 +122,7 @@ pwsh --version
 ### Clone the Repository
 
 ```powershell
-git clone <REPOSITORY_URL>
+git clone https://github.com/CloudTechs-ai/Azure-hybrid-cloud-PS-project.git
 cd azure-hybrid-cloud-project
 ```
 
