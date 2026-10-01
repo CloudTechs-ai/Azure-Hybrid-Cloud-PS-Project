@@ -1,49 +1,38 @@
 # ☁️ Enterprise Azure Hybrid Cloud Platform
 
-### Production-Style Azure Networking & Infrastructure Automation with Terraform
+**Production-Style Azure Networking & Infrastructure Automation with Terraform**
 
-[![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?logo=microsoftazure)](#)
-[![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform)](#)
-[![Virtual WAN](https://img.shields.io/badge/Virtual%20WAN-Networking-0078D4?logo=microsoftazure)](#)
-[![Entra ID](https://img.shields.io/badge/Entra%20ID-Identity-0078D4?logo=microsoftazure)](#)
-[![P2S VPN](https://img.shields.io/badge/P2S%20VPN-Secure%20Access-0078D4?logo=microsoftazure)](#)
-[![NSGs](https://img.shields.io/badge/NSGs-Network%20Security-0078D4?logo=microsoftazure)](#)
-[![Private Endpoints](https://img.shields.io/badge/Private%20Endpoints-Private%20Networking-0078D4?logo=microsoftazure)](#)
-[![Azure Blob Storage](https://img.shields.io/badge/Azure%20Blob%20Storage-Remote%20State-0078D4?logo=microsoftazure)](#)
-[![RBAC](https://img.shields.io/badge/Azure%20RBAC-Access%20Control-0078D4?logo=microsoftazure)](#)
-[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=github)](#)
-[![OIDC](https://img.shields.io/badge/OIDC-Keyless%20Auth-2088FF?logo=openid)](#)
-[![TFLint](https://img.shields.io/badge/TFLint-Validation-844FBA?logo=terraform)](#)
-[![Checkov](https://img.shields.io/badge/Checkov-IaC%20Security-7B42BC)](#)
-[![Trivy](https://img.shields.io/badge/Trivy-Security%20Scanning-1904DA?logo=aqua)](#)
-[![PowerShell](https://img.shields.io/badge/PowerShell-Automation-5391FE?logo=powershell)](#)
+![Azure](https://img.shields.io/badge/Microsoft_Azure-Cloud-0078D4?logo=microsoftazure&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-844FBA?logo=terraform&logoColor=white)
+![Virtual WAN](https://img.shields.io/badge/Virtual_WAN-Networking-0078D4)
+![Entra ID](https://img.shields.io/badge/Entra_ID-Identity-0078D4)
+![P2S VPN](https://img.shields.io/badge/P2S_VPN-Secure_Access-2E7D32)
+![NSGs](https://img.shields.io/badge/NSGs-Network_Security-C62828)
+![Blob Storage](https://img.shields.io/badge/Blob_Storage-Remote_State-0078D4)
+![Azure RBAC](https://img.shields.io/badge/Azure_RBAC-Access_Control-0078D4)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?logo=githubactions&logoColor=white)
+![OIDC](https://img.shields.io/badge/OIDC-Keyless_Auth-6A1B9A)
+![TFLint](https://img.shields.io/badge/TFLint-Validation-5C4EE5)
+![Checkov](https://img.shields.io/badge/Checkov-IaC_Security-00B8D4)
+![Trivy](https://img.shields.io/badge/Trivy-Security_Scanning-1904DA)
+![PowerShell](https://img.shields.io/badge/PowerShell-Automation-5391FE?logo=powershell&logoColor=white)
 
-> An enterprise-style Azure networking and infrastructure platform demonstrating **Terraform automation, Azure Virtual WAN, identity-driven access, environment isolation, secure remote state, CI/CD, OIDC authentication, infrastructure security scanning, drift detection, and real-world cloud troubleshooting.**
+An enterprise-style Azure hybrid cloud platform demonstrating secure networking, infrastructure-as-code, identity-driven access, environment isolation, remote state management, CI/CD automation, security scanning, drift detection, and operational troubleshooting.
 
----
+## Contents
 
-## 📌 Project Highlights
-
-| Capability                 | Implementation                       |
-| -------------------------- | ------------------------------------ |
-| ☁️ Cloud Platform          | Microsoft Azure                      |
-| 🏗️ Infrastructure as Code | Terraform                            |
-| 🌐 Network Architecture    | Azure Virtual WAN + Virtual Hub      |
-| 🔀 Network Topology        | Hub-and-spoke                        |
-| 🔐 Identity                | Microsoft Entra ID                   |
-| 🔑 Access Control          | Azure RBAC                           |
-| 🔒 Remote Access           | Entra ID authenticated P2S VPN       |
-| 🛡️ Network Security       | NSGs + private endpoint architecture |
-| 🗃️ Terraform State        | Azure Blob Storage                   |
-| 🔄 Environments            | Dev / Test / Prod                    |
-| 🤖 CI/CD                   | GitHub Actions                       |
-| 🔐 CI Authentication       | GitHub OIDC                          |
-| 🧪 IaC Quality             | Terraform Validate + TFLint          |
-| 🛡️ Security Scanning      | Checkov + Trivy                      |
-| 📈 Operations              | Drift Detection                      |
-| ⚙️ Automation              | PowerShell + Azure CLI               |
-
----
+- [Architecture Diagram](#architecture-diagram)
+- [Overview](#overview)
+- [What I Built](#what-i-built)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+- [Remote State](#remote-state)
+- [Validation](#validation)
+- [CI/CD](#cicd)
+- [What I Learned](#what-i-learned)
+- [Change Record](#change-record)
+- [Future Enhancements](#future-enhancements)
+- [Project Status](#project-status)
 
 # 🏗️ Architecture
 
@@ -68,1137 +57,501 @@ flowchart LR
     IaC --> Data
 ```
 
-### 🔎 Topology Overview
-
-| Component                   | CIDR / Purpose                                 |
-| --------------------------- | ---------------------------------------------- |
-| **Azure Virtual WAN**       | Centralized networking layer                   |
-| **Virtual WAN Hub**         | `10.0.0.0/23`                                  |
-| **Application Spoke VNet**  | `10.1.0.0/24`                                  |
-| **Data Spoke VNet**         | `10.2.0.0/24`                                  |
-| **Application Subnet**      | NSG protected                                  |
-| **Data Subnet**             | NSG protected                                  |
-| **Private Endpoint Subnet** | Reserved for PaaS private endpoints            |
-| **P2S VPN**                 | Entra ID authenticated administrator access    |
-| **Terraform State**         | Azure Blob Storage with environment separation |
-
-> **Implementation note:** The Mermaid diagram reflects the topology currently implemented in this repository. A finalized Draw.io or PNG architecture diagram is planned as a future enhancement and is intentionally not represented as an existing deliverable.
-
----
-
-# 🚀 Getting Started
-
-Want to run the project?
-
-There are two paths depending on whether you want to **quickly inspect the Terraform** or **deploy the Azure platform**.
-
-| Path                     | Purpose                        | State Backend | Best For               |
-| ------------------------ | ------------------------------ | ------------- | ---------------------- |
-| 🟢 **Demo**              | Inspect and validate Terraform | Local         | Recruiters / reviewers |
-| 🔵 **Azure Environment** | Deploy the full platform       | Azure Blob    | Engineers / deployment |
-
----
-
-## 🟢 Option 1 — Quick Demo
-
-The demo environment is the fastest way to explore the Terraform without configuring Azure remote state.
-
-### Prerequisites
-
-Install:
-
-* Terraform
-* Git
-* PowerShell 7+
-
-Verify your tools:
-
-```powershell
-terraform version
-git --version
-pwsh --version
-```
-
-### Clone the Repository
-
-```powershell
-git clone https://github.com/CloudTechs-ai/Azure-hybrid-cloud-PS-project.git
-cd azure-hybrid-cloud-project
-```
-
-### Initialize Terraform
-
-```powershell
-cd demo
-terraform init
-```
-
-### Validate
-
-```powershell
-terraform validate
-```
-
-### Generate a Plan
-
-```powershell
-terraform plan
-```
-
-The demo path uses **local Terraform state** and intentionally avoids the Azure Blob Storage authentication and RBAC requirements of the full deployment.
-
-> **Want to see the project quickly? Start here.**
-
----
-
-# 🔵 Option 2 — Deploy the Azure Platform
-
-The full Azure environments use **Azure Blob Storage for remote Terraform state**.
-
-### Prerequisites
-
-You will need:
-
-* An Azure subscription
-* Azure CLI
-* Terraform
-* PowerShell 7+
-* Appropriate Azure permissions
-
-Verify:
-
-```powershell
-az version
-terraform version
-```
-
----
-
-## 1. Authenticate to Azure
-
-```powershell
-az login
-```
-
-Verify the active subscription:
-
-```powershell
-az account show
-```
-
-If you have multiple subscriptions:
-
-```powershell
-az account set --subscription "<SUBSCRIPTION_ID>"
-```
-
----
-
-## 2. Bootstrap Terraform Remote State
-
-Terraform must be able to access its backend **before Terraform can initialize**.
-
-The backend bootstrap process is designed to verify and/or configure:
-
-* Azure authentication
-* Azure subscription
-* Terraform state resource group
-* Storage account
-* `tfstate` container
-* Blob data-plane permissions
-* Backend configuration
-* State access
-
-Run:
-
-```powershell
-cd scripts
-.\Bootstrap-Backend.ps1
-```
-
-### Why Bootstrap the Backend?
-
-A common Terraform Azure failure occurs when the backend references the wrong storage account, the state container does not exist, or the authenticated identity lacks Blob data-plane permissions.
-
-The bootstrap process is intended to make backend setup **repeatable, validated, and easier to troubleshoot**.
-
----
-
-## 3. Initialize Development
-
-```powershell
-cd environments/dev
-terraform init
-```
-
-Validate:
-
-```powershell
-terraform validate
-```
-
-Generate a plan:
-
-```powershell
-terraform plan
-```
-
-Review the plan before applying:
-
-```powershell
-terraform apply
-```
-
----
-
-## 4. Test Environment
-
-The test environment maintains its own configuration and Terraform state.
-
-```powershell
-cd environments/test
-terraform init
-terraform validate
-terraform plan
-```
-
----
-
-## 5. Production Environment
-
-Production is intentionally separated from development and test.
-
-```powershell
-cd environments/prod
-terraform init
-terraform validate
-terraform plan
-```
-
-Production infrastructure should be deployed through the controlled GitHub Actions workflow rather than treated as an unrestricted local deployment.
-
----
-
-# ⚠️ Terraform Remote State Authentication
-
-One of the most important lessons from building this project:
-
-> **Successfully authenticating to Azure does not automatically grant Terraform permission to access Azure Blob Storage data.**
-
-Azure separates the **management plane** from the **data plane**.
+## Overview
+
+This project demonstrates a reusable Azure infrastructure platform built with Terraform, PowerShell, Microsoft Entra ID, and GitHub Actions.
+
+The platform focuses on infrastructure and operational patterns commonly required in enterprise Azure environments:
+
+- Azure Virtual WAN and Virtual Hub for centralized connectivity
+- Application and data spoke workload subnets with NSG protection
+- Entra ID-authenticated P2S VPN for administrator access
+- Dedicated subnet reserved for future private endpoints
+- Separate dev, test, and prod environments with isolated Terraform state
+- Azure Blob Storage remote state
+- Azure RBAC and Blob data-plane access control
+- User-assigned managed identity
+- Monitoring and network diagnostics
+- Backup infrastructure
+- GitHub Actions validation and deployment workflows
+- OIDC-based keyless Azure authentication
+- Terraform validation and linting
+- Checkov and Trivy security scanning
+- Scheduled infrastructure drift detection
+- Operational troubleshooting and rollback documentation
+
+The project is designed to demonstrate the complete infrastructure lifecycle:
+
+**Design → Automate → Secure → Validate → Deploy → Monitor → Troubleshoot**
+
+The network, VPN control plane, environment isolation, Terraform validation, and plan workflows have been tested. A packet-level workload test remains pending an Azure-side target because the current subscription does not have a suitable VM SKU or quota available in East US.
+
+## What I Built
+
+### Cloud Infrastructure
+
+- Azure Virtual WAN and Virtual Hub
+- Application and data spoke VNets
+- NSG-protected subnets
+- P2S VPN connectivity
+- Private endpoint networking foundation
+- Log Analytics monitoring
+- Recovery Services backup foundation
+
+### Identity and Security
+
+- Microsoft Entra ID and Azure RBAC
+- User-assigned managed identity
+- Entra ID-authenticated P2S VPN
+- GitHub Actions OIDC with federated workload identity
+- Checkov (advisory), Trivy, and TFLint
+
+### Infrastructure as Code
+
+- Reusable Terraform modules
+- Environment-specific root configurations
+- Azure Blob Storage remote state with separate state boundaries for dev, test, and prod
+- Automated validation
+- Saved Terraform plan artifacts
+- Scheduled drift detection
+
+### Automation and Operations
+
+- PowerShell backend bootstrap script
+- Azure CLI authentication
+- GitHub Actions CI/CD
+- Controlled Terraform apply and destroy
+- Rollback and troubleshooting documentation
+
+## Repository Structure
 
 ```text
-Management Plane
-       │
-       ▼
-Azure Resources
-```
-
-versus:
-
-```text
-Data Plane
-       │
-       ▼
-Blob Data
-```
-
-Terraform's AzureRM backend requires access to the Blob data plane.
-
-Therefore:
-
-```powershell
-az login
-```
-
-being successful does **not** necessarily mean:
-
-```powershell
-terraform init
-```
-
-will succeed.
-
----
-
-## 🔐 Understanding 401 vs 403 vs 404
-
-| Error                                 | Meaning                                               | Typical Cause                                       |
-| ------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
-| `401 Unauthorized`                    | Authentication failed                                 | Invalid or missing authentication                   |
-| `403 AuthorizationPermissionMismatch` | Identity authenticated but lacks required data access | Missing Blob RBAC                                   |
-| `404 Resource Not Found`              | Backend resource cannot be found                      | Wrong resource group, storage account, or container |
-
-For Terraform remote state, the executing identity requires an appropriate Azure Storage data-plane role such as:
-
-```text
-Storage Blob Data Contributor
-```
-
-### The Troubleshooting Model
-
-```text
-Azure Login
-     │
-     ▼
-Correct Subscription
-     │
-     ▼
-Correct Resource Group
-     │
-     ▼
-Correct Storage Account
-     │
-     ▼
-Correct Container
-     │
-     ▼
-Blob Data RBAC
-     │
-     ▼
-terraform init
-```
-
----
-
-# 🧠 Engineering Lessons
-
-This project was built around several real-world infrastructure lessons.
-
-## 1. Management Plane ≠ Data Plane
-
-Being able to manage or view an Azure Storage Account does not automatically provide permission to read and write Blob data.
-
-Terraform remote state depends on **Blob data-plane authorization**.
-
----
-
-## 2. Authentication ≠ Authorization
-
-A valid Azure login proves identity.
-
-It does not prove that the identity has permission to perform every operation required by Terraform.
-
-```text
-Identity
-   │
-   ▼
-Authentication
-   │
-   ▼
-Authorization
-   │
-   ▼
-Resource Access
-```
-
----
-
-## 3. Never Trust Stale Backend Configuration
-
-Terraform backend configuration can reference infrastructure that no longer exists.
-
-Before debugging Terraform itself, verify:
-
-* Subscription
-* Resource group
-* Storage account
-* Container
-* State key
-
-This project encountered exactly this class of issue during development.
-
-The resolution was to compare the Terraform backend configuration against the **actual Azure resources**, rather than assuming the configuration was still accurate.
-
----
-
-## 4. Local and CI Authentication Are Different
-
-Local development can authenticate through:
-
-```text
-Azure CLI
-```
-
-while GitHub Actions can authenticate through:
-
-```text
-GitHub Actions
-      │
-      ▼
-OIDC
-      │
-      ▼
-Microsoft Entra ID
-      │
-      ▼
-Azure
-```
-
-These are different authentication workflows and should be configured accordingly.
-
----
-
-## 5. Infrastructure Must Be Reproducible
-
-A cloud environment should not depend on undocumented manual steps.
-
-This project therefore emphasizes:
-
-* Terraform
-* Modular architecture
-* Backend bootstrap
-* Environment isolation
-* Automated validation
-* CI/CD
-* Security scanning
-* Drift detection
-* Operational documentation
-
----
-
-# 🌐 Network Architecture
-
-## Azure Virtual WAN
-
-Azure Virtual WAN provides the centralized networking layer.
-
-```text
-                     Azure Virtual WAN
-                             │
-                     ┌───────▼───────┐
-                     │  Virtual Hub  │
-                     │  10.0.0.0/23  │
-                     └───────┬───────┘
-                             │
-              ┌──────────────┴──────────────┐
-              │                             │
-              ▼                             ▼
-      Application Spoke               Data Spoke
-        10.1.0.0/24                   10.2.0.0/24
-```
-
-The application and data workloads are separated into independent VNets.
-
----
-
-# 🔐 Identity & Access
-
-Identity is a core component of the platform.
-
-The project uses **Microsoft Entra ID** for identity-driven access.
-
-Azure RBAC provides authorization for Azure resources and data-plane operations.
-
-The P2S VPN uses Entra ID authentication for administrator connectivity.
-
----
-
-## 🔑 P2S VPN Access Flow
-
-```text
-Administrator Laptop
-        │
-        ▼
-Azure VPN Client
-        │
-        ▼
-Microsoft Entra ID
-        │
-        ▼
-P2S VPN
-        │
-        ▼
-Virtual WAN Hub
-        │
-        ├──────────► Application Spoke
-        │
-        └──────────► Data Spoke
-```
-
-This provides authenticated administrative access through the VPN architecture rather than directly exposing management services to the public internet.
-
----
-
-# 🔒 Network Security
-
-Network segmentation is implemented using:
-
-* Application subnet
-* Data subnet
-* Network Security Groups
-* Private endpoint subnet reservation
-* Virtual WAN routing
-
-The architecture separates application and data workloads while providing centralized connectivity through the Virtual WAN hub.
-
----
-
-# 🔗 Private Endpoints
-
-The data spoke contains a dedicated subnet reserved for private endpoints.
-
-```text
-Data VNet
-│
-├── Data Subnet
-│
-└── Private Endpoint Subnet
-       │
-       └── PaaS Private Connectivity
-```
-
-This establishes the network foundation for connecting Azure PaaS services through private networking.
-
----
-
-# 🧱 Terraform Architecture
-
-The project uses reusable Terraform modules rather than placing the entire platform into one monolithic configuration.
-
-```text
-modules/
-│
-├── backup/
-├── governance/
-├── identity/
-├── monitoring/
-└── network/
-```
-
-This allows infrastructure components to be reused across environments while keeping environment-specific configuration separate.
-
----
-
-# 📁 Repository Structure
-
-```text
-.
-├── environments/
-│   ├── dev/
-│   ├── test/
-│   └── prod/
-│
-├── modules/
-│   ├── backup/
-│   ├── governance/
-│   ├── identity/
-│   ├── monitoring/
-│   └── network/
-│
-├── demo/
-│
-├── scripts/
-│   └── Bootstrap-Backend.ps1
-│
+Azure-Hybrid-Cloud-PS-Project/
 ├── .github/
 │   └── workflows/
 │       ├── terraform-quality.yml
 │       ├── terraform-plan.yml
 │       ├── terraform-apply.yml
 │       ├── terraform-destroy-plan.yml
-│       ├── terraform-destroy-apply.yml
-│       └── drift-detection.yml
-│
+│       └── terraform-destroy-apply.yml
+├── demo/                         # Local-state validation entry point
+├── docs/
+│   ├── images/                   # Architecture diagram and validation screenshots
+│   ├── troubleshooting.md
+│   ├── rollback-runbook.md
+│   └── validation/
+│       └── test.md
+├── environments/
+│   ├── dev/                      # Development root module and backend
+│   ├── test/                     # Test root module and backend
+│   └── prod/                     # Production root module and backend
+├── modules/
+│   ├── backup/                   # Recovery Services vault and VM policy
+│   ├── governance/               # Audit-only environment tag policy
+│   ├── identity/                 # User-assigned managed identity
+│   ├── monitoring/               # Log Analytics workspace and network diagnostics
+│   └── network/                  # Virtual WAN, hub, spokes, VPN, and NSGs
+├── scripts/
+│   └── Bootstrap-Backend.ps1     # Creates Azure Terraform state storage
 ├── .gitignore
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
----
+## Getting Started
 
-# 🗃️ Environment Isolation
+Choose the path that matches what you want to do:
 
-Development, test, and production maintain separate Terraform configurations and state.
+| Path | Purpose | Terraform state | Best for |
+|---|---|---|---|
+| Demo | Inspect and validate Terraform | Local | Recruiters and reviewers |
+| Azure environments | Plan or deploy the full platform | Azure Blob Storage | Engineers and real deployments |
 
-```text
-                    Terraform Code
-                          │
-             ┌────────────┼────────────┐
-             │            │            │
-             ▼            ▼            ▼
-            DEV          TEST         PROD
-             │            │            │
-             ▼            ▼            ▼
-         State #1      State #2      State #3
+### Version Requirements
+
+Terraform and provider version constraints are declared throughout the root configurations and reusable modules.
+
+| Component | Constraint | Applies to |
+|---|---|---|
+| Terraform CLI | `>= 1.7.0` | All root configurations and modules |
+| AzureRM provider | `~> 5.4.0` | Demo, Azure environments, and modules |
+| AzureAD provider | `~> 2.53` | Dev, test, and prod environments |
+
+The demo and each Azure environment include a committed `.terraform.lock.hcl` file recording the selected provider versions and checksums. `terraform init` uses those locked selections. Run `terraform init -upgrade` only when intentionally updating providers, and commit the resulting lockfile changes.
+
+### Option 1: Quick Demo
+
+The demo is the fastest way to review the Terraform without configuring Azure remote state.
+
+**Prerequisites:** Terraform CLI 1.7 or later, Git, and PowerShell 7+ (`pwsh`).
+
+Verify the tools:
+
+```bash
+terraform version
+git --version
+pwsh --version
 ```
 
-This reduces the risk of one environment accidentally manipulating another environment's Terraform state.
+Clone the repository and validate:
 
----
-
-# ☁️ Remote Terraform State
-
-Azure Blob Storage provides remote Terraform state for the real environments.
-
-```text
-Azure Storage
-│
-├── Development
-│   └── dev.terraform.tfstate
-│
-├── Test
-│   └── test.terraform.tfstate
-│
-└── Production
-    └── prod.terraform.tfstate
+```bash
+git clone https://github.com/CloudTechs-ai/Azure-Hybrid-Cloud-PS-Project.git
+cd Azure-Hybrid-Cloud-PS-Project/demo
+terraform init
+terraform validate
 ```
 
-Each environment uses an isolated state location.
+To generate a plan, configure Azure CLI authentication and an Azure subscription first. The demo uses local Terraform state and does not require Azure Blob Storage authentication or remote-state RBAC, but the Azure provider still contacts Azure during planning:
 
-This provides:
-
-* Environment separation
-* Centralized state storage
-* Consistent backend management
-* Reduced risk of cross-environment state manipulation
-
----
-
-# 🤖 GitHub Actions CI/CD
-
-Infrastructure changes are integrated with GitHub Actions.
-
-The workflow separates **validation, planning, and deployment**.
-
-```text
-Git Push
-   │
-   ▼
-Terraform Format
-   │
-   ▼
-Terraform Validate
-   │
-   ▼
-TFLint
-   │
-   ▼
-Checkov
-   │
-   ▼
-Trivy
-   │
-   ▼
-Terraform Plan
-   │
-   ▼
-Review
-   │
-   ▼
-Controlled Apply
-```
-
----
-
-# 🔑 GitHub OIDC
-
-The CI/CD architecture uses GitHub Actions OIDC rather than relying on long-lived Azure credentials.
-
-```text
-GitHub Actions
-      │
-      │ OIDC Token
-      ▼
-Microsoft Entra ID
-      │
-      │ Federated Identity
-      ▼
-Azure
-      │
-      ▼
-Terraform
-```
-
-This provides an identity-based authentication model for CI/CD and reduces dependence on long-lived cloud credentials.
-
----
-
-# 🛡️ Security & Quality Scanning
-
-The project incorporates multiple validation layers.
-
-### Terraform Validate
-
-Checks Terraform configuration correctness.
-
-### TFLint
-
-Performs Terraform linting and configuration quality checks.
-
-### Checkov
-
-Performs infrastructure-as-code security analysis.
-
-### Trivy
-
-Provides security scanning for applicable infrastructure and container artifacts.
-
-Together:
-
-```text
-Terraform
-    │
-    ├── Terraform Validate
-    ├── TFLint
-    ├── Checkov
-    └── Trivy
-```
-
-The goal is to detect configuration, quality, and security issues before infrastructure changes are deployed.
-
----
-
-# 🔄 Drift Detection
-
-Infrastructure can change outside Terraform.
-
-The project therefore includes automated drift detection.
-
-```text
-Scheduled GitHub Action
-        │
-        ▼
+```bash
+az login
 terraform plan
-        │
-        ▼
-Compare Terraform
-       vs
-Azure Infrastructure
-        │
-        ▼
-Detect Drift
 ```
 
-This provides an additional control for identifying infrastructure that no longer matches the declared Terraform configuration.
+> **Do not run `terraform apply` or `terraform destroy` against another person's subscription.**
 
----
+### Option 2: Deploy an Azure Environment
 
-# 🧯 Controlled Apply & Destroy
+**Prerequisites:** an Azure subscription, Azure CLI, Terraform CLI 1.7 or later, PowerShell 7+, and permission to create the platform resources. Backend bootstrap additionally requires the Azure PowerShell `Az` module.
 
-Infrastructure changes are intentionally separated into planning and execution stages.
-
-### Apply
-
-```text
-Terraform Plan
-      │
-      ▼
-Review
-      │
-      ▼
-Terraform Apply
-```
-
-### Destroy
-
-```text
-Destroy Plan
-      │
-      ▼
-Review / Confirmation
-      │
-      ▼
-Destroy Apply
-```
-
-This reduces the likelihood of accidental destructive operations.
-
----
-
-# 🔍 Plan Artifact Integrity
-
-The CI/CD design associates Terraform plans with the source revision that produced them.
-
-```text
-Git Commit
-    │
-    ▼
-Terraform Plan
-    │
-    ▼
-Plan Artifact
-    │
-    ▼
-Review
-    │
-    ▼
-Apply
-```
-
-The objective is to ensure the infrastructure being applied corresponds to the infrastructure that was reviewed.
-
----
-
-# 🧪 Testing & Validation
-
-The project uses multiple levels of validation.
-
-## Terraform Validation
+Verify the tools:
 
 ```powershell
-terraform fmt -check
-terraform validate
-terraform plan
+az version
+terraform version
+pwsh --version
 ```
 
-## Static Analysis
+Install Azure PowerShell if required:
 
-```text
-TFLint
-Checkov
-Trivy
+```powershell
+Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
 ```
 
-## Azure Validation
-
-The deployed environment can be validated through:
-
-* Azure resource configuration
-* Network configuration
-* RBAC
-* Storage access
-* VPN configuration
-
----
-
-# 📡 Connectivity Validation
-
-The P2S VPN control plane has been validated through Azure configuration and authentication.
-
-Packet-level workload testing remains environment-dependent because Azure VM SKU availability, regional quota, and capacity can affect the ability to provision test workloads.
-
-This distinction is intentional:
-
-> **A successful Terraform deployment does not automatically prove end-to-end application traffic.**
-
-The project documents this distinction rather than presenting control-plane validation as proof of complete workload connectivity.
-
----
-
-# 🧠 Troubleshooting Lessons
-
-## Backend Resource Mismatch
-
-One of the practical challenges encountered during development was stale Terraform backend configuration pointing toward state resources that did not match the currently deployed Azure Storage infrastructure.
-
-The resolution process was:
-
-```text
-Check Terraform Backend
-        ↓
-Verify Azure Resource Group
-        ↓
-Verify Storage Account
-        ↓
-Verify Container
-        ↓
-Verify Authentication
-        ↓
-Verify Blob RBAC
-        ↓
-Reinitialize Terraform
-```
-
-This reinforced the importance of validating the actual Azure environment instead of assuming the Terraform configuration represents reality.
-
----
-
-## `401 Unauthorized`
-
-Typical investigation:
+Authenticate to Azure. Terraform uses Azure CLI authentication for the configured Blob backend, and the bootstrap script uses the separate Azure PowerShell sign-in context:
 
 ```powershell
 az login
 az account show
+Connect-AzAccount
 ```
 
-Then verify the backend authentication configuration and identity being used.
+If you have multiple subscriptions, select the intended one in both contexts:
 
----
-
-## `403 AuthorizationPermissionMismatch`
-
-A `403` indicates that the identity reached Azure Storage but lacked the necessary data-plane permission.
-
-Check the identity's Azure RBAC assignment.
-
-For Terraform state, an appropriate role may include:
-
-```text
-Storage Blob Data Contributor
+```powershell
+az account set --subscription "<SUBSCRIPTION_ID>"
+Set-AzContext -Subscription "<SUBSCRIPTION_ID>"
 ```
 
----
+## Remote State
 
-## `404 Resource Not Found`
+### Bootstrap
 
-Verify:
+Prepare remote state before initializing Terraform. Each environment uses a separate Azure Storage account, resource group, container, and state key.
 
-```text
-Subscription
-Resource Group
-Storage Account
-Container
+The bootstrap script creates a resource group, storage account, and `tfstate` container. It does not grant Blob data permissions or edit Terraform backend files. Run it from the repository root for each backend that needs to be created:
+
+```powershell
+.\scripts\Bootstrap-Backend.ps1 -Suffix dev01ahcps -Environment dev
+.\scripts\Bootstrap-Backend.ps1 -Suffix test01ahcps -Environment test
+.\scripts\Bootstrap-Backend.ps1 -Suffix prod03ahcps -Environment prod
 ```
 
-A `404` commonly indicates that Terraform is targeting a backend resource that does not exist or does not match the intended environment.
+These suffixes match the backend names documented below. The script is safe to rerun for existing resources. If you use different names, update the corresponding `backend.tf` values to match before running `terraform init`.
 
----
+The identity running Terraform also needs the **Storage Blob Data Contributor** role on the state storage account or container. Bootstrap does not assign this role, so arrange the assignment separately and allow time for it to take effect.
 
-# 🚦 Deployment Workflow
+### Deploy Development
 
-## Local Development
-
-```text
-terraform fmt
-      ↓
-terraform init
-      ↓
+```powershell
+Set-Location .\environments\dev
+Copy-Item terraform.tfvars.example terraform.tfvars
+terraform init -reconfigure
 terraform validate
-      ↓
 terraform plan
-      ↓
-Review
-      ↓
+```
+
+Review the plan carefully before applying:
+
+```powershell
 terraform apply
 ```
 
+Never run an apply from the wrong environment directory, and never commit `terraform.tfvars`, state files, credentials, or storage keys.
+
+### Test Environment
+
+Test maintains its own Terraform configuration and remote state, independent from development:
+
+```powershell
+cd ..\test
+terraform init
+terraform validate
+terraform plan
+```
+
+### Production Environment
+
+Production is intentionally separated from dev and test. Use the repository's GitHub Actions workflow for controlled production deployment rather than treating prod as an unrestricted local deployment.
+
+The current repository does not have GitHub-enforced environment reviewer approvals enabled. See [CI/CD](#cicd) for the existing safeguards and limitations.
+
+### Environment and State Design
+
+Each environment uses a separate Azure Storage account, resource group, container, and state key. This prevents state overlap and creates an independent recovery boundary.
+
+| Environment | Backend resource group | Storage account | Container | State key |
+|---|---|---|---|---|
+| dev | `rg-tfstate-dev01ahcps` | `sttfstatedev01ahcps` | `tfstate` | `dev.terraform.tfstate` |
+| test | `rg-tfstate-test01ahcps` | `sttfstatetest01ahcps` | `tfstate` | `test.terraform.tfstate` |
+| prod | `rg-tfstate-prod03ahcps` | `sttfstateprod03ahcps` | `tfstate` | `prod.terraform.tfstate` |
+
+The `ahcps` suffix makes the storage account names globally unique while preserving the environment identifiers `dev01`, `test01`, and `prod03`. Separate storage accounts were chosen because they provide a clearer security and recovery boundary than sharing one account across all environments.
+
+### Backend Protection
+
+The backend bootstrap script configures:
+
+- StorageV2 account
+- Standard LRS redundancy
+- HTTPS and TLS 1.2
+- Blob public access disabled
+- Dedicated `tfstate` container
+
+For production use, enable and verify Blob versioning, blob soft delete, container soft delete, and change feed on each state storage account.
+
+### Remote State Troubleshooting
+
+One of the key operational lessons from this project: **authentication is not authorization, and Azure management-plane access is not the same as Blob data-plane access.** Successfully authenticating to Azure does not automatically grant Terraform permission to access Blob data.
+
+| Error | Meaning | Typical cause |
+|---|---|---|
+| `401 Unauthorized` | Authentication failed | Missing or invalid authentication |
+| `403 AuthorizationPermissionMismatch` | Identity authenticated but lacks data access | Missing Blob data role, or role assignment not yet effective |
+| `404 Resource Not Found` | Backend resource could not be found | Wrong subscription, resource group, storage account, container, or state key |
+
+Before troubleshooting Terraform itself, verify the active subscription, resource group, storage account, container, state key, authentication method, and Blob data permissions.
+
+Local development commonly uses Azure CLI authentication. GitHub Actions uses GitHub OIDC through Microsoft Entra ID. These are separate authentication workflows.
+
+## Validation
+
+### Terraform
+
+The repository uses multiple layers of Terraform validation:
+
+```bash
+terraform fmt -check -recursive
+terraform init -input=false -reconfigure
+terraform validate
+terraform plan -input=false -lock-timeout=5m
+```
+
+The demo, dev, test, and prod configurations were initialized with `terraform init -backend=false -upgrade` and passed `terraform validate` using AzureRM 5.4.0.
+
+A colleague is independently testing the updated configuration against their own Terraform state. Those results are pending and are not represented here as completed.
+
+### P2S Control-Plane Validation
+
+The test environment P2S control plane was validated with Azure VPN Client:
+
+- Entra ID authentication succeeded
+- The VPN gateway was reachable and attached
+- The laptop received VPN address `172.16.0.130`
+- Routes for the hub, app spoke, data spoke, and VPN pool were received
+- Azure VPN Client reached **Connected**
+- Azure Portal reported the active P2S session when refreshed promptly
+
+See [`docs/validation/test.md`](docs/validation/test.md) for the recorded evidence and procedure.
+
+### End-to-End Traffic Validation
+
+End-to-end packet flow requires an Azure-side private target, such as a VM or private endpoint. A temporary VM deployment was attempted, but East US capacity, SKU availability, and quota restrictions prevented deployment. The temporary VM attempt was removed.
+
+| Validation area | Status |
+|---|---|
+| Terraform configuration | ✅ Validated |
+| Azure networking | ✅ Validated |
+| P2S control plane | ✅ Validated |
+| Entra ID VPN authentication | ✅ Validated |
+| VPN route validation | ✅ Validated |
+| Private workload packet test | ⏳ Pending |
+
+The project intentionally distinguishes control-plane validation from end-to-end workload validation.
+
+### Validation Evidence
+
+**Deployed resources.** Resource group for the `<environment>` environment, including the Virtual WAN and hub, VPN gateway, network security groups, Recovery Services vault, Log Analytics workspace, and user-assigned managed identity, all provisioned by Terraform.
+
+![Azure resource group](docs/images/resource-group.png)
+
+**VPN connectivity.** Azure VPN Client connected to the `test` environment using Microsoft Entra ID authentication, with routes received for the hub, application spoke, data spoke, and VPN pool. This validates the P2S control plane; packet-level workload testing is pending an Azure-side target.
+
+![Azure VPN Client connected](docs/images/vpn-connected.png)
+
+**CI quality checks.** Terraform Quality workflow passing on `main`: formatting, backend-free validation, TFLint, Checkov (advisory), and Trivy.
+
+![GitHub Actions Terraform Quality run](docs/images/actions-quality-green.png)
+
 ## CI/CD
 
-```text
-Pull Request
-     ↓
-Quality Checks
-     ↓
-Security Scanning
-     ↓
-Terraform Plan
-     ↓
-Review
-     ↓
-Approval
-     ↓
-Terraform Apply
-```
+Pull requests and pushes to `main` run:
 
----
+- Terraform formatting
+- Backend-free validation for demo, dev, test, and prod
+- TFLint
+- Checkov (advisory)
+- Trivy
 
-# 🧹 Destroying Infrastructure
+Cloud-backed plans remain manual so pull request code does not run with Azure credentials. Optional SonarCloud analysis runs when the repository variables `SONAR_ORGANIZATION` and `SONAR_PROJECT_KEY` and the secret `SONAR_TOKEN` are configured.
 
-For development and test environments:
+### GitHub OIDC
 
-```powershell
-terraform plan -destroy
-```
-
-Review the destruction plan carefully.
-
-Then:
-
-```powershell
-terraform destroy
-```
-
-Production destruction should remain subject to the repository's controlled CI/CD workflow.
-
----
-
-# 📊 Technology Stack
-
-## ☁️ Cloud
-
-* Microsoft Azure
-* Azure Virtual WAN
-* Azure Virtual Hub
-* Azure VNets
-* Azure Storage
-
-## 🌐 Networking
-
-* Hub-and-spoke architecture
-* Virtual WAN routing
-* P2S VPN
-* Network Security Groups
-* Private endpoint architecture
-* Network segmentation
-
-## 🏗️ Infrastructure as Code
-
-* Terraform
-* Terraform modules
-* Remote state
-* Environment isolation
-* Drift detection
-
-## 🔐 Identity & Security
-
-* Microsoft Entra ID
-* Azure RBAC
-* GitHub OIDC
-* Federated identity
-* Checkov
-* Trivy
-
-## 🤖 DevOps
-
-* GitHub Actions
-* Terraform CI/CD
-* Automated validation
-* Plan artifacts
-* Controlled deployment
-* Destructive-operation controls
-
-## ⚙️ Automation
-
-* PowerShell
-* Azure CLI
-* Terraform automation
-
----
-
-# 🎯 What This Project Demonstrates
-
-This repository demonstrates practical experience with:
-
-### Cloud Architecture
-
-* Designing Azure network architecture
-* Building hub-and-spoke environments
-* Implementing Azure Virtual WAN
-* Separating application and data networks
-
-### Infrastructure as Code
-
-* Automating infrastructure with Terraform
-* Designing reusable Terraform modules
-* Managing remote Terraform state
-* Isolating environments
-* Detecting infrastructure drift
-
-### Identity & Security
-
-* Implementing Microsoft Entra ID authentication
-* Configuring P2S VPN access
-* Applying Azure RBAC
-* Understanding management-plane vs data-plane authorization
-* Implementing OIDC authentication
-* Performing infrastructure security scanning
-
-### DevOps
-
-* Implementing GitHub Actions CI/CD
-* Automating Terraform validation
-* Generating and reviewing Terraform plans
-* Controlling infrastructure applies
-* Protecting destructive workflows
-
-### Operations
-
-* Troubleshooting Terraform backend failures
-* Diagnosing `401`, `403`, and `404` errors
-* Validating Azure resource configuration
-* Designing repeatable infrastructure workflows
-* Documenting operational procedures
-
----
-
-# 🏆 Engineering Takeaways
-
-The most important lesson from this project is that **cloud engineering is more than provisioning resources**.
-
-A production-style platform requires understanding how:
+GitHub Actions authenticates to Azure through OpenID Connect and workload identity federation, with Entra federation configured for the GitHub environments each workflow uses.
 
 ```text
-Networking
-     +
-Identity
-     +
-Security
-     +
-Infrastructure as Code
-     +
-State Management
-     +
-CI/CD
-     +
-Governance
-     +
-Monitoring
-     +
-Troubleshooting
-     +
-Recovery
+GitHub Actions → OIDC token → Microsoft Entra ID → Federated identity → Azure RBAC → Azure resources
 ```
 
-fit together.
+This provides keyless authentication for the GitHub Actions Azure access path. State access is granted separately through Storage Blob Data Contributor.
 
-The project therefore focuses not only on **building infrastructure**, but also on making that infrastructure:
+### Plan and Apply Workflow
 
-> **Secure · Reproducible · Automated · Testable · Recoverable · Understandable**
+The project separates Terraform planning from application. The workflows provide:
 
-by the next engineer.
+- Manual environment selection for dev, test, and prod
+- OIDC authentication
+- Saved binary plan artifacts with seven-day retention
+- Plan text written to the GitHub Actions job summary
+- Apply that checks out and verifies the exact source commit recorded with the plan
+- Shared per-environment concurrency groups, so plans, applies, drift checks, and destroys cannot operate on the same state concurrently
+- Manual apply confirmation through a required `APPLY` or `CANCEL` input
 
----
+The apply workflow downloads and applies the exact saved plan artifact. It never generates a new plan during apply, and should be run only with the environment, plan run ID, and source commit that were reviewed.
 
-# 🔮 Future Enhancements
+### Production Deployment Controls
 
-Potential future improvements include:
+Production apply and destroy additionally:
 
-* Azure Firewall
-* Azure Bastion
-* Private DNS architecture
-* Expanded Azure Monitor / Log Analytics
-* Centralized security monitoring
-* Azure Policy
-* Policy-as-Code
-* Management Groups
-* Cost governance
-* Additional workload deployments
-* Kubernetes integration
-* Containerized workloads
-* Advanced observability
-* Finalized Draw.io architecture diagram
-* PNG architecture export
+- Require a successful Terraform Quality run for the exact source commit
+- Require the workflow definition from `main`
+- Verify the matching successful plan workflow run and artifact before execution
 
----
+### Destructive Operations
 
-# 👨‍💻 About
+Destroy is separated from normal deployment and is never triggered by a push or pull request. It requires:
 
-Built by **Ryan Golden** as a hands-on demonstration of Azure cloud networking, infrastructure automation, security, identity, and DevOps engineering.
+- A successful manual destroy plan
+- Review of the saved destroy artifact
+- The matching plan run ID and source commit
+- Explicit typed `DESTROY` confirmation in the destroy-apply workflow
 
-The project is designed to demonstrate the complete infrastructure lifecycle:
+### Drift Detection
 
-```text
-DESIGN
-  ↓
-ARCHITECT
-  ↓
-AUTOMATE
-  ↓
-SECURE
-  ↓
-VALIDATE
-  ↓
-DEPLOY
-  ↓
-MONITOR
-  ↓
-TROUBLESHOOT
-  ↓
-RECOVER
-  ↓
-IMPROVE
-```
+Scheduled daily workflows check dev, test, and prod. When live infrastructure differs from the Terraform configuration, the workflow opens or updates a GitHub issue, and closes it automatically once the environment is reconciled.
 
----
+Failed Terraform Apply or Destroy Apply runs also open a GitHub issue linking to the failed run.
 
-# ⭐ Final Takeaway
+### Security Scanning
 
-This repository is more than a collection of Terraform resources.
+- **TFLint:** Terraform linting and configuration quality
+- **Checkov:** infrastructure-as-code security analysis (advisory)
+- **Trivy:** scans the Terraform repository directly
 
-It demonstrates an approach to cloud infrastructure as an engineering system:
+Cosign is not included because this repository does not build or publish a container image. It should be added alongside a container build workflow so it can sign and verify an actual image digest.
 
-**Versioned. Automated. Secured. Tested. Observable. Recoverable.**
+### Production Approval Limitation
 
-The architecture, CI/CD workflows, identity model, remote-state strategy, security controls, and troubleshooting documentation are designed to demonstrate how modern cloud infrastructure is **engineered, validated, deployed, and operated**.
+The repository should not be presented as having independently approval-gated production deployment.
+
+Main branch protection is not enabled because GitHub offers branch protection rules on private repositories only with a Pro, Team, or Enterprise plan, and this repository is on the Free plan. GitHub Environment required reviewers require an Enterprise plan for private repositories. This was confirmed by attempting to configure branch protection through the GitHub API, which returned `403 Upgrade to GitHub Pro or make this repository public to enable this feature`.
+
+The existing workflow provides plan review, artifact verification, commit verification, manual confirmation, and controlled execution. Formal reviewer approval remains pending a paid GitHub plan or a repository visibility or configuration change.
+
+See [`docs/rollback-runbook.md`](docs/rollback-runbook.md) for the incident response and rollback procedure covering failed applies, failed destroys, and detected drift.
+
+## Monitoring and Backup
+
+**Monitoring:** Log Analytics workspace and network diagnostics.
+
+**Backup:** Recovery Services vault and VM backup policy. This provides the infrastructure foundation for protected workloads once a supported VM workload exists.
+
+## What I Learned
+
+**Management plane vs data plane.** Azure management access does not automatically provide Blob data access. Terraform remote state requires data-plane permissions.
+
+**Authentication vs authorization.** A successful Azure login confirms who you are, not that you are allowed to perform every operation Terraform needs.
+
+**Environment isolation.** Separate state and backend resources give clearer lifecycle and recovery boundaries between dev, test, and prod.
+
+**CI/CD security.** GitHub OIDC authenticates to Azure without storing long-lived Azure credentials in GitHub.
+
+**Validation layers.** Formatting, linting, security scanning, cloud-backed planning, and workload testing each validate a different layer of the platform.
+
+**Troubleshooting.** Cloud failures often come from the underlying Azure service, identity configuration, permissions, quotas, or regional availability, not only from Terraform configuration.
+
+## Change Record
+
+### 2026-09-27
+
+| Area | Change | Reason |
+|---|---|---|
+| README and onboarding | Added project overview, security and tool badges, and separate demo and Azure deployment instructions | Distinguish local validation from a deployment that needs Azure access, remote state, and Blob data permissions |
+| Terraform versions | Changed the AzureRM constraint from `~> 3.100` to `~> 5.4.0` in all root configurations and modules; refreshed the four committed provider lockfiles to select 5.4.0 | The old constraint allowed only AzureRM 3.x and excluded the intended 5.4 release |
+| Diagnostic settings | Updated the metric block to `enabled_metric` | AzureRM 5.4 expects the `enabled_metric` block in its schema |
+| Recovery Services vault | Removed the unsupported `soft_delete_enabled` argument | The AzureRM 5.4 vault resource no longer accepts it |
+| Version documentation | Documented Terraform and provider constraints and the purpose of committed lockfiles | Make supported version ranges and repeatable provider selections clear |
+
+## Future Enhancements
+
+- Add a supported private workload target for packet-level VPN validation
+- Add private endpoint resources and private DNS integration
+- Restrict backend network access after all required identities are known
+- Add alert rules to the monitoring module
+- Add VM backup association when a protected VM exists
+- Add Cloud Adoption Framework and Well-Architected Framework mapping
+- Enable GitHub-enforced branch and environment approval gates for production apply when the repository configuration supports them
+
+## Troubleshooting
+
+- [`docs/troubleshooting.md`](docs/troubleshooting.md): Azure VPN Client diagnostics, P2S session checks, Terraform backend errors, quota failures, SKU availability, and the future end-to-end traffic test procedure
+- [`docs/rollback-runbook.md`](docs/rollback-runbook.md): failed applies, failed destroys, drift, and rollback procedures
+- [`docs/validation/test.md`](docs/validation/test.md): P2S and route validation evidence
+
+## Project Status
+
+| Capability | Status |
+|---|---|
+| Azure Virtual WAN and Virtual Hub | ✅ Implemented |
+| Application and data spokes | ✅ Implemented |
+| NSGs | ✅ Implemented |
+| Entra ID P2S VPN | ✅ Implemented |
+| Managed identity and Azure RBAC | ✅ Implemented |
+| Remote Terraform state | ✅ Implemented |
+| Dev/test/prod isolation | ✅ Implemented |
+| GitHub OIDC and Terraform CI/CD | ✅ Implemented |
+| TFLint, Checkov, Trivy | ✅ Implemented |
+| Drift detection | ✅ Implemented |
+| Plan artifacts, controlled apply and destroy | ✅ Implemented |
+| P2S control-plane validation | ✅ Validated |
+| End-to-end workload test | ⏳ Pending |
+| Private endpoints and private DNS | ⏳ Future |
+| Production reviewer approval | ⏳ Future |
+
+## Technology Stack
+
+| Area | Technologies |
+|---|---|
+| Azure | Virtual WAN, Virtual Hub, VNets, NSGs, P2S VPN, Storage, Log Analytics, Recovery Services |
+| Identity | Microsoft Entra ID, Azure RBAC, user-assigned managed identity, GitHub OIDC, workload identity federation |
+| Infrastructure as code | Terraform, modules, AzureRM and AzureAD providers, remote state |
+| DevOps | GitHub Actions, plan artifacts, drift detection, PowerShell, Azure CLI |
+| Security | TFLint, Checkov, Trivy |
+
+## Final Takeaway
+
+This project demonstrates a reusable Azure infrastructure platform built around networking, Terraform, identity, security, CI/CD, and operations, showing how infrastructure can be automated, secured, isolated, validated, deployed, and troubleshot.
+
+It documents both what has been validated and what remains future work, including the pending end-to-end workload traffic test and production approval-gate enhancement.
+
+**Repository:** [CloudTechs-ai/Azure-Hybrid-Cloud-PS-Project](https://github.com/CloudTechs-ai/Azure-Hybrid-Cloud-PS-Project)
